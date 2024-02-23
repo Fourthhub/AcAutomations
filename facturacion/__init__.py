@@ -11,7 +11,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     except ValueError:
         # Si hay un error al interpretar el JSON, devuelve un error
         return func.HttpResponse(
-            "Please send a valid JSON in the request body.",
+            "Please send a valid JSON in the request bodddy.",
             status_code=400
         )
     else:
