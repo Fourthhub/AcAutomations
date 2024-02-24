@@ -28,7 +28,6 @@ def determinarSerie(reserva):
             break
     if serieFacturacion=="Rocio":
         iva=0
-    
     return serieFacturacion
 
 
@@ -71,7 +70,7 @@ def marcarComoFacturada(reserva):
     conn.request("PUT", "v1/reservations/"+reserva["hostawayReservationId"], payload_json, headers)
 
     res = conn.getresponse()
-    data = res.read()
+    return res.read()
 
     
 
@@ -132,7 +131,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             
             
             resultado = crearFactura(reserva)
-            marcarComoFacturada(reserva)
+            data = marcarComoFacturada(reserva)
         except Exception as e:
             return  func.HttpResponse(str(e)
             ,
@@ -140,7 +139,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
 
         
         return func.HttpResponse(
-            f"Factura creada correctamente +" + str(resultado),
+            f"Factura creada correctamente +  " + str(resultado) + data.decode('utf-8'),
             status_code=200
         )
         
