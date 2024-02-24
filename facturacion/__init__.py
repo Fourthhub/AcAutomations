@@ -7,7 +7,7 @@ url = "https://api.holded.com/api/invoicing/v1/documents/invoice"
 
 
 def determinarSerie(reserva):
-    custom_fields = data_dict["data"]["customFieldValues"]
+    custom_fields = reserva["data"]["customFieldValues"]
     #Por defecto va a la serie Alojamientos
     facturas_value = "Alojamientos"
     for field in custom_fields:
