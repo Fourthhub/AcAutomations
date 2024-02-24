@@ -20,7 +20,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         try:
             facturacion.crearFactura(req_body)
         except Exception as e:
-            return  func.HttpResponse(srt(e)
+            return  func.HttpResponse(str(e)
             ,
             status_code=400)
 
