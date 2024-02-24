@@ -7,15 +7,15 @@ url = "https://api.holded.com/api/invoicing/v1/documents/invoice"
 
 
 def determinarSerie(reserva):
-    custom_fields = reserva["data"]["customFieldValues"]
+    custom_fields = reserva["customFieldValues"]
     #Por defecto va a la serie Alojamientos
     facturas_value = "Alojamientos"
     for field in custom_fields:
         if field["customField"]["name"] == "Facturas":
             facturas_value = field["value"]
             break
-        else:
-            return facturas_value
+    
+    return facturas_value
 
 #mapeo de nombres de series y su ID
 parametro_a_id = {
@@ -36,7 +36,7 @@ def crearFactura(reserva):
             {
                 "tax": 21,
                 "name": f"{reserva['listingName']} - {reserva['arrivalDate']} a {reserva['departureDate']}",
-                "subtotal": str((reserva["totalPrice"]/1.21))
+                "subtotal": str(reserva["totalPrice"]/1.21))
             }
         ],
         "currency": reserva["currency"],
@@ -68,7 +68,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         )
     else:
 
-        
+        if 
         # Genera la factura en base al la informacion de la req recibido
         try:
             crearFactura(req_body)
