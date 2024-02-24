@@ -71,6 +71,8 @@ def marcarComoFacturada(reserva):
     conn.request("PUT", "v1/reservations/"+reserva["hostawayReservationId"], payload_json, headers)
 
     res = conn.getresponse()
+    if res.status != 200:
+        raise Exception(f"Error al obtener el acceso: {res.status} {res.reason}")
     return res.read()
 
     
@@ -100,9 +102,11 @@ def crearFactura(reserva):
         "key": "260f9570fed89b95c28916dee27bc684"
     }
 
-    response = requests.post(url, json=payload, headers=headers)
+    res = requests.post(url, json=payload, headers=headers)
+    if res.status != 200:
+        raise Exception(f"Error al obtener el acceso: {res.status} {res.reason}")
     
-    return response.status_code
+    return res.status_code
 
 def main(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('Python HTTP trigger function processed a request.')
