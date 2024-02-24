@@ -68,7 +68,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         )
     else:
 
-        if 
+        
         # Genera la factura en base al la informacion de la req recibido
         try:
             crearFactura(req_body)
