@@ -1,4 +1,5 @@
 import logging
+import facturacion
 import azure.functions as func
 import json  # Importa el módulo json para procesar el cuerpo de la solicitud
 
@@ -15,19 +16,17 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             status_code=400
         )
     else:
-        # Extrae el listingName y la arrivalDate del cuerpo de la solicitud
-        listing_name = req_body.get('listingName')
-        arrival_date = req_body.get('arrivalDate')
+        # Genera la factura en base al la informacion de la req recibido
+        try:
+            facturacion.crearFactura(req_body)
+        except Exception:
+            return  func.HttpResponse(
+            "Un error ha ocurrido al crear la factura.",
+            status_code=400)
 
-        if listing_name and arrival_date:
-            # Si ambos valores están presentes, devuelve una respuesta personalizada
-            return func.HttpResponse(
-                f"Received listing name: {listing_name} with arrival date: {arrival_date}.",
-                status_code=200
-            )
-        else:
-            # Si falta alguno de los valores, indica qué es necesario
-            return func.HttpResponse(
-                "Please ensure both 'listingName' and 'arrivalDate' are included in the request body.",
-                status_code=400
-            )
+        
+        return func.HttpResponse(
+            f"Factura creada correctamente",
+            status_code=200
+        )
+        
