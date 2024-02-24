@@ -31,8 +31,6 @@ def crearFactura(reserva):
         "key": "260f9570fed89b95c28916dee27bc684"
     }
 
-    # Necesitas reemplazar 'url' con la URL real a la que estás enviando la petición
-    url = "TU_URL_AQUI"
     response = requests.post(url, json=payload, headers=headers)
 
     return response.status_code
