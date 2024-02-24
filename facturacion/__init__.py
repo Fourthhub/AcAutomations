@@ -48,8 +48,9 @@ def obtener_acceso_hostaway():
     conn.request("POST", "/v1/accessTokens", payload, headers)
     res = conn.getresponse()
     data = res.read()
-    return data.decode("utf-8")
-
+    data_json = json.loads(data.decode("utf-8"))  # Parsea la respuesta a un objeto JSON
+    return data_json.get("access_token")  
+ 
 def marcarComoFacturada(reserva):
     bearer = obtener_acceso_hostaway()
     custom_fields = reserva["customFieldValues"]
