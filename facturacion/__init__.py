@@ -2,28 +2,79 @@ import datetime
 import logging
 import azure.functions as func
 import requests
-import json  # Importa el módulo json para procesar el cuerpo de la solicitudç
+import http.client
+import json  # Importa el módulo json para procesar el cuerpo de la solicitud
+
+conn = http.client.HTTPSConnection("api.hostaway.com")
 url = "https://api.holded.com/api/invoicing/v1/documents/invoice"
+#Por defecto va a la serie Alojamientos
+serieFacturacion = "Alojamientos"
+iva=0.21
+IdFactura=None
 
-
-def determinarSerie(reserva):
-    custom_fields = reserva["customFieldValues"]
-    #Por defecto va a la serie Alojamientos
-    facturas_value = "Alojamientos"
-    for field in custom_fields:
-        if field["customField"]["name"] == "Facturas":
-            facturas_value = field["value"]
-            break
-    
-    return facturas_value
-
-#mapeo de nombres de series y su ID
+#Mapeo de nombres de series y su ID
 parametro_a_id = {
     "Rocio": "65d9f06600a829a27305f066s",
     "Alojamientos": "65d9f0e90396551d79088219",
     "Efectivo": "62115e5292bee258e53a6756",
 }
 
+def determinarSerie(reserva):
+    custom_fields = reserva["customFieldValues"]
+       
+    for field in custom_fields:
+        if field["customField"]["name"] == "Serie Facturas":
+            serieFacturacion = field["value"]
+            break
+    if serieFacturacion=="Rocio":
+        iva=0
+    
+    return serieFacturacion
+
+
+def comprobarSiExisteFactura(reserva):
+    custom_fields = reserva["customFieldValues"]
+    for field in custom_fields:
+        if field["customField"]["name"] == "HoldedID":
+            idFactura = field["value"]
+            break
+    if IdFactura != None:
+        return True
+    else: return False
+
+def obtener_acceso_hostaway():
+    
+    payload = "grant_type=client_credentials&client_id=81585&client_secret=0e3c059dceb6ec1e9ec6d5c6cf4030d9c9b6e5b83d3a70d177cf66838694db5f&scope=general"
+    headers = {'Content-type': "application/x-www-form-urlencoded", 'Cache-control': "no-cache"}
+    conn.request("POST", "/v1/accessTokens", payload, headers)
+    res = conn.getresponse()
+    data = res.read()
+    return data.decode("utf-8")
+
+def marcarComoFacturada(reserva):
+    bearer = obtener_acceso_hostaway()
+    custom_fields = reserva["customFieldValues"]
+    for field in custom_fields:
+        if field["customField"]["name"] == "HoldedID":
+            field["value"] = "Ya esta facturada"
+            break
+    
+    payload_json = json.dumps(reserva)
+
+    headers = {
+        'Authorization': "Bearer "+bearer,
+        'Content-type': "application/json",
+        'Cache-control': "no-cache",
+    }
+
+
+conn.request("PUT", "v1/reservations/117277?forceOverbooking=1", payload_json, headers)
+
+res = conn.getresponse()
+data = res.read()
+print(data.decode("utf-8"))
+
+    
 
 def crearFactura(reserva):
 
@@ -34,9 +85,9 @@ def crearFactura(reserva):
         "applyContactDefaults": True,
         "items": [
             {
-                "tax": 21,
+                "tax": (iva*100),
                 "name": f"{reserva['listingName']} - {reserva['arrivalDate']} a {reserva['departureDate']}",
-                "subtotal": str((reserva["totalPrice"]/1.21))
+                "subtotal": str((reserva["totalPrice"]/(1+iva)))
             }
         ],
         "currency": reserva["currency"],
@@ -51,6 +102,7 @@ def crearFactura(reserva):
     }
 
     response = requests.post(url, json=payload, headers=headers)
+    
     return response.status_code
 
 def main(req: func.HttpRequest) -> func.HttpResponse:
@@ -58,7 +110,8 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
 
     try:
         # Intenta obtener el cuerpo de la solicitud y convertirlo de JSON a un diccionario de Python
-        req_body = req.get_json()
+        reserva = req.get_json()
+        
         
     except ValueError:
         # Si hay un error al interpretar el JSON, devuelve un error
@@ -66,12 +119,21 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             "Please send a valid JSON in the request bodddy.",
             status_code=400
         )
-    else:
-
-       
-        # Genera la factura en base al la informacion de la req recibido
+    else:    
+        
+        
+        # Comprobar que la factura esta pagada y que no se ha generado previamente
         try:
-            crearFactura(req_body)
+            if(reserva["paymentStatus"]!="Paid"):
+                return func.HttpResponse(f"La factura no se genera hasta que no se completa el pago",
+            status_code=200)
+        
+            if(comprobarSiExisteFactura(reserva)):
+                return  func.HttpResponse(f"Factura ya existente", status_code=200)
+            
+            else:
+                crearFactura(reserva)
+                marcarComoFacturada(reserva)
         except Exception as e:
             return  func.HttpResponse(str(e)
             ,
