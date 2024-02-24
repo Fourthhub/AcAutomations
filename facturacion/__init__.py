@@ -1,5 +1,5 @@
 import logging
-import facturacion
+from facturacion import crearFactura
 import azure.functions as func
 import json  # Importa el módulo json para procesar el cuerpo de la solicitud
 
