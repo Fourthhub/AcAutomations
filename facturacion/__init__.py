@@ -131,7 +131,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                 return  func.HttpResponse(f"Factura ya existente", status_code=200)
             
             
-            crearFactura(reserva)
+            resultado = crearFactura(reserva)
             marcarComoFacturada(reserva)
         except Exception as e:
             return  func.HttpResponse(str(e)
@@ -140,7 +140,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
 
         
         return func.HttpResponse(
-            f"Factura creada correctamente",
+            f"Factura creada correctamente +" + "resultado",
             status_code=200
         )
         
