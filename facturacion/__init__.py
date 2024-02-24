@@ -68,11 +68,10 @@ def marcarComoFacturada(reserva):
     }
 
 
-conn.request("PUT", "v1/reservations/117277?forceOverbooking=1", payload_json, headers)
+    conn.request("PUT", "v1/reservations/"+reserva["hostawayReservationId"], payload_json, headers)
 
-res = conn.getresponse()
-data = res.read()
-print(data.decode("utf-8"))
+    res = conn.getresponse()
+    data = res.read()
 
     
 
