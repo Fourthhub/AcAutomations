@@ -109,13 +109,13 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
 
     try:
         # Intenta obtener el cuerpo de la solicitud y convertirlo de JSON a un diccionario de Python
-        reserva = req.get_json()
+        reserva = req.get_json()["data"]
         
         
     except ValueError:
         # Si hay un error al interpretar el JSON, devuelve un error
         return func.HttpResponse(
-            "Please send a valid JSON in the request bodddy.",
+            "El json enviado no contiene el objeto data",
             status_code=400
         )
     else:    
