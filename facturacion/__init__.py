@@ -2,12 +2,13 @@ import datetime
 import logging
 import azure.functions as func
 import requests
-import json  # Importa el módulo json para procesar el cuerpo de la solicitud
+import json  # Importa el módulo json para procesar el cuerpo de la solicitudç
+url = "https://api.holded.com/api/invoicing/v1/documents/invoice"
 
 def crearFactura(reserva):
     # Convertir la fecha de reserva a timestamp
     
-    
+
     now = datetime.datetime.now()
     timestamp = int(datetime.datetime.timestamp(now))
 
