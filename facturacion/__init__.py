@@ -19,9 +19,9 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         # Genera la factura en base al la informacion de la req recibido
         try:
             facturacion.crearFactura(req_body)
-        except Exception:
-            return  func.HttpResponse(
-            "Un error ha ocurrido al crear la factura.",
+        except Exception as e:
+            return  func.HttpResponse(srt(e)
+            ,
             status_code=400)
 
         
