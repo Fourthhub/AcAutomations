@@ -134,7 +134,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             crearFactura(reserva)
             marcarComoFacturada(reserva)
         except Exception as e:
-            return  func.HttpResponse(str(e) `
+            return  func.HttpResponse(str(e)
             ,
             status_code=400)
 
