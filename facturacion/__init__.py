@@ -18,7 +18,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     else:
         # Genera la factura en base al la informacion de la req recibido
         try:
-            facturacion.crearFactura(req_body)
+            crearFactura(req_body)
         except Exception as e:
             return  func.HttpResponse(str(e)
             ,
