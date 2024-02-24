@@ -36,7 +36,7 @@ def crearFactura(reserva):
             {
                 "tax": 21,
                 "name": f"{reserva['listingName']} - {reserva['arrivalDate']} a {reserva['departureDate']}",
-                "subtotal": str(reserva["totalPrice"]/1.21))
+                "subtotal": str((reserva["totalPrice"]/1.21))
             }
         ],
         "currency": reserva["currency"],
@@ -68,7 +68,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         )
     else:
 
-        if 
+       
         # Genera la factura en base al la informacion de la req recibido
         try:
             crearFactura(req_body)
