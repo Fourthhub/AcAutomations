@@ -5,24 +5,43 @@ import requests
 import json  # Importa el módulo json para procesar el cuerpo de la solicitudç
 url = "https://api.holded.com/api/invoicing/v1/documents/invoice"
 
+
+def determinarSerie(reserva):
+    custom_fields = data_dict["data"]["customFieldValues"]
+    #Por defecto va a la serie Alojamientos
+    facturas_value = "Alojamientos"
+    for field in custom_fields:
+        if field["customField"]["name"] == "Facturas":
+            facturas_value = field["value"]
+            break
+        else:
+            return facturas_value
+
+#mapeo de nombres de series y su ID
+parametro_a_id = {
+    "Rocio": "65d9f06600a829a27305f066s",
+    "Alojamientos": "65d9f0e90396551d79088219",
+    "Efectivo": "62115e5292bee258e53a6756",
+}
+
+
 def crearFactura(reserva):
-    # Convertir la fecha de reserva a timestamp
-    
 
     now = datetime.datetime.now()
     timestamp = int(datetime.datetime.timestamp(now))
-
+    serieFacturacion = parametro_a_id[determinarSerie(reserva)]
     payload = {
         "applyContactDefaults": True,
         "items": [
             {
+                "tax": 21,
                 "name": f"{reserva['listingName']} - {reserva['arrivalDate']} a {reserva['departureDate']}",
-                "subtotal": str(reserva["totalPrice"])
+                "subtotal": str((reserva["totalPrice"]/1.21))
             }
         ],
         "currency": reserva["currency"],
         "date": timestamp,  # Uso de timestamp de la fecha de reserva
-        #"numSerieId": "Rocio",
+        "numSerieId": serieFacturacion,
         "contactName": reserva["guestName"]  # Uso del nombre del huésped
     }
     headers = {
@@ -40,6 +59,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     try:
         # Intenta obtener el cuerpo de la solicitud y convertirlo de JSON a un diccionario de Python
         req_body = req.get_json()
+        
     except ValueError:
         # Si hay un error al interpretar el JSON, devuelve un error
         return func.HttpResponse(
@@ -47,6 +67,8 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             status_code=400
         )
     else:
+
+        if 
         # Genera la factura en base al la informacion de la req recibido
         try:
             crearFactura(req_body)
