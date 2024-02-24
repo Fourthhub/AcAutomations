@@ -140,7 +140,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
 
         
         return func.HttpResponse(
-            f"Factura creada correctamente +" + resultado,
+            f"Factura creada correctamente +" + str(resultado),
             status_code=200
         )
         
