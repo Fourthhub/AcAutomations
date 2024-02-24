@@ -55,7 +55,7 @@ def marcarComoFacturada(reserva):
     bearer = obtener_acceso_hostaway()
     custom_fields = reserva["customFieldValues"]
     for field in custom_fields:
-        if field["customField"]["name"] == "HoldedID":
+        if field["customField"]["name"] == "holdedID":
             field["value"] = "Ya esta facturada"
             break
     
