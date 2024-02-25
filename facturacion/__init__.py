@@ -57,26 +57,38 @@ def obtener_acceso_hostaway():
  
  
 def marcarComoFacturada(reserva):
-    bearer = obtener_acceso_hostaway()
-    custom_fields = reserva["customFieldValues"]
-    for field in custom_fields:
-        if field["customField"]["name"] == "holdedID":
-            field["value"] = "Ya esta facturada"
-            break
-    
-    payload_json = json.dumps(reserva)
+    try:
+        bearer = obtener_acceso_hostaway()
+        custom_fields = reserva["customFieldValues"]
+        for field in custom_fields:
+            if field["customField"]["name"] == "holdedID":
+                field["value"] = "Ya esta facturada"
+                break
+        
+        payload_json = json.dumps(reserva)
 
-    headers = {
-        'Authorization': f"Bearer {bearer}",
-        'Content-type': "application/json",
-        'Cache-control': "no-cache",
-    }
+        headers = {
+            'Authorization': f"Bearer {bearer}",
+            'Content-type': "application/json",
+            'Cache-control': "no-cache",
+        }
 
+        # Asegúrate de que la URL y el método HTTP sean correctos
+        conn.request("PUT", "/v1/reservations/" + str(reserva["hostawayReservationId"]), body=payload_json, headers=headers)
 
-    conn.request("PUT", "v1/reservations/"+reserva["hostawayReservationId"], payload_json, headers)
+        res = conn.getresponse()
+        data = res.read().decode('utf-8')
 
-    res = conn.getresponse()
-    return res.read().decode('utf-8') + "payload:" + payload_json + "headers:" + headers
+        if res.status != 200:
+            logging.error(f"Error al marcar como facturada: {res.status} - {data}")
+            return f"Error al marcar como facturada: {res.status} - {data}"
+
+        return data + " payload:" + payload_json  # + " headers:" + str(headers) Puede contener información sensible
+
+    except Exception as e:
+        logging.error(f"Excepción en marcarComoFacturada: {str(e)}")
+        return f"Excepción en marcarComoFacturada: {str(e)}"
+
     
 
     
