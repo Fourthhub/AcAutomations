@@ -67,7 +67,7 @@ def marcarComoFacturada(reserva):
     payload_json = json.dumps(reserva)
 
     headers = {
-        'Authorization': "Bearer "+bearer,
+        'Authorization': f"Bearer {bearer}",
         'Content-type': "application/json",
         'Cache-control': "no-cache",
     }
@@ -76,7 +76,7 @@ def marcarComoFacturada(reserva):
     conn.request("PUT", "v1/reservations/"+reserva["hostawayReservationId"], payload_json, headers)
 
     res = conn.getresponse()
-    return res.read().decode('utf-8') + bearer
+    return res.read().decode('utf-8') + "payload:" + payload_json + "headers:" + headers
     
 
     
