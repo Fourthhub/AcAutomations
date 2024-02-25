@@ -52,7 +52,7 @@ def obtener_acceso_hostaway():
     if res.status != 200:
         raise Exception(f"Error al obtener el acceso: {res.status} {res.reason}")
     
-    return data_json
+    return json.dumps(data_json,indent=4)
 
  
  
