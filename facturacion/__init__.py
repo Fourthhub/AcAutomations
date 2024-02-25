@@ -76,6 +76,7 @@ def marcarComoFacturada(reserva):
     conn.request("PUT", "v1/reservations/"+reserva["hostawayReservationId"], payload_json, headers)
 
     res = conn.getresponse()
+    return res
     
 
     
