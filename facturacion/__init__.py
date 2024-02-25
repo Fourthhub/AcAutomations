@@ -49,7 +49,7 @@ def comprobar_si_existe_factura(reserva):
     custom_fields = reserva["customFieldValues"]
     for field in custom_fields:
         if field["customField"]["name"] == "holdedID":
-            if field["value"] != "Ya esta facturada":
+            if field["value"] == "Ya esta facturada":
                 return True
     return False
             
