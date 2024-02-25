@@ -91,7 +91,13 @@ def marcarComoFacturada(reserva,token):
             'Content-type': "application/json",
             'Cache-control': "no-cache",
         }
-        # Asume que reserva ya tiene el campo actualizado localmente y solo necesitas enviarlo de vuelta
+
+        custom_fields = reserva["customFieldValues"]
+        for field in custom_fields:
+            if field["customField"]["name"] == "holdedID":
+                field["value"] = "Ya esta facturada"
+                break
+        
         response = requests.put(url, json=reserva, headers=headers)
         response.raise_for_status()  # Esto lanzará un error si el código de estado es >= 400
         return "Marca como facturada exitosamente."
