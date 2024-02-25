@@ -112,6 +112,8 @@ def marcarComoFacturada(reserva,token):
 def main(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('Azure HTTP trigger function processed a request.')
     try:
+        if req.req.get_json().get("object")!="reservation":
+            return func.HttpResponse("Solo procesa eventos de reserva", status_code=200)
         reserva = req.get_json().get("data", {})
         if reserva == "test":
             return func.HttpResponse("Test Succesfull", status_code=200)
