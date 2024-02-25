@@ -147,7 +147,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
 
         
         return func.HttpResponse(
-            f"Factura creada correctamente +  " + str(resultado) + data.read.decode('utf-8'),
+            f"Factura creada correctamente +  " + str(resultado) + data.read().decode('utf-8'),
             status_code=200
         )
         
