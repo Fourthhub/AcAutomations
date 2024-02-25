@@ -80,31 +80,14 @@ def crear_factura(reserva, serie_facturacion, iva):
     except requests.RequestException as e:
         logging.error(f"Error al crear la factura: {str(e)}")
         raise
-
-def obtener_acceso_hostaway():
+ 
+def marcarComoFacturada(reserva,token):
     try:
-        url = "https://api.hostaway.com/v1/accessTokens"
-        payload = {
-            "grant_type": "client_credentials",
-            "client_id": "81585",
-            "client_secret": "0e3c059dceb6ec1e9ec6d5c6cf4030d9c9b6e5b83d3a70d177cf66838694db5f",
-            "scope": "general"
-        }
-        headers = {'Content-type': "application/x-www-form-urlencoded", 'Cache-control': "no-cache"}
-        response = requests.post(url, data=payload, headers=headers)
-        response.raise_for_status()  # Esto lanzará un error si el código de estado es >= 400
-        return response.json()["access_token"]
-    except requests.RequestException as e:
-        logging.error(f"Error al obtener el token de acceso: {e}")
-        raise  # Esto permitirá que el error se propague para un manejo adicional
-
-def marcarComoFacturada(reserva):
-    try:
-        bearer_token = obtener_acceso_hostaway()
+        
         reserva_id = str(reserva["hostawayReservationId"])
         url = f"https://api.hostaway.com/v1/reservations/{reserva_id}"
         headers = {
-            'Authorization': f"Bearer {bearer_token}",
+            'Authorization': f"Bearer {token}",
             'Content-type': "application/json",
             'Cache-control': "no-cache",
         }
@@ -130,7 +113,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         serie_facturacion, iva = determinar_serie_y_iva(reserva)
         resultado_crear_factura, factura_info = crear_factura(reserva, serie_facturacion, iva)
         access_token = obtener_acceso_hostaway()
-        marcar_como_facturada(reserva, access_token)
+        marcarComoFacturada(reserva, access_token)
         
         return func.HttpResponse(f"Factura creada correctamente: {factura_info}", status_code=resultado_crear_factura)
     except Exception as e:
