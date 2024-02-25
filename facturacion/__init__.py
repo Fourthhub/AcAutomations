@@ -51,7 +51,7 @@ def obtener_acceso_hostaway():
     data_json = json.loads(data.decode("utf-8"))  # Parsea la respuesta a un objeto JSON
     if res.status != 200:
         raise Exception(f"Error al obtener el acceso: {res.status} {res.reason}")
-
+    
     return data_json.get("access_token") 
 
  
@@ -76,7 +76,7 @@ def marcarComoFacturada(reserva):
     conn.request("PUT", "v1/reservations/"+reserva["hostawayReservationId"], payload_json, headers)
 
     res = conn.getresponse()
-    return res
+    return res.read().decode('utf-8') + bearer
     
 
     
