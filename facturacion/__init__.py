@@ -42,18 +42,16 @@ def comprobarSiExisteFactura(reserva):
     else: return False
 
 def obtener_acceso_hostaway():
-    
     payload = "grant_type=client_credentials&client_id=81585&client_secret=0e3c059dceb6ec1e9ec6d5c6cf4030d9c9b6e5b83d3a70d177cf66838694db5f&scope=general"
     headers = {'Content-type': "application/x-www-form-urlencoded", 'Cache-control': "no-cache"}
     conn.request("POST", "/v1/accessTokens", payload, headers)
     res = conn.getresponse()
     data = res.read()
-    data_json = json.loads(data.decode("utf-8"))  # Parsea la respuesta a un objeto JSON
+    data_json = json.loads(data.decode("utf-8"))
     if res.status != 200:
         raise Exception(f"Error al obtener el acceso: {res.status} {res.reason}")
     
-    return json.dumps(data_json,indent=4)
-
+    return data_json["access_token"]
  
  
 def marcarComoFacturada(reserva):
