@@ -72,7 +72,7 @@ def crear_factura(reserva, serie_facturacion, iva):
         headers = {
             "accept": "application/json",
             "content-type": "application/json",
-            "key": "your-api-key-here"
+            "key": "260f9570fed89b95c28916dee27bc684"
         }
         response = requests.post(URL_HOLDED_INVOICE, json=payload, headers=headers)
         response.raise_for_status()
