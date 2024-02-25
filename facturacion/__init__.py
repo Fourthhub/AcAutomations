@@ -46,11 +46,14 @@ def determinar_serie_y_iva(reserva):
     return serie_facturacion, iva
 
 def comprobar_si_existe_factura(reserva):
-    custom_fields = reserva.get("customFieldValues", [])
+    custom_fields = reserva["customFieldValues"]
     for field in custom_fields:
-        if field["customField"]["name"] == "HoldedID" and field["value"]:
-            return True
+        if field["customField"]["name"] == "HoldedID":
+            if field["value"] != "Ya esta facturada":
+                return True
     return False
+            
+    
 
 def crear_factura(reserva, serie_facturacion, iva):
     try:
