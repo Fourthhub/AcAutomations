@@ -106,8 +106,7 @@ def crearFactura(reserva):
     }
 
     res = requests.post(url, json=payload, headers=headers)
-    if res.status != 200:
-        raise Exception(f"Error al obtener el acceso: {res.status} {res.reason}")
+    
     
     return res.status_code
 
