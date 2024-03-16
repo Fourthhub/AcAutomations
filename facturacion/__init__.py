@@ -56,27 +56,27 @@ def comprobar_si_existe_factura(reserva):
     
 
 def crear_factura(reserva, serie_facturacion, iva):
+    now = datetime.datetime.now()
+    timestamp = int(now.timestamp())
+    serie_id = PARAMETRO_A_ID.get(serie_facturacion, PARAMETRO_A_ID[SERIE_FACTURACION_DEFAULT])
+    payload = {
+        "applyContactDefaults": True,
+        "items": [{
+            "tax": iva * 100,
+            "name": f"{reserva['listingName']} - {reserva['arrivalDate']} a {reserva['departureDate']}",
+            "subtotal": str(reserva["totalPrice"] / (1 + iva))    
+        }],
+        "currency": reserva["currency"],
+        "date": timestamp,
+        "numSerieId": serie_id,
+        "contactName": reserva["guestName"]
+    }
+    headers = {
+        "accept": "application/json",
+        "content-type": "application/json",
+        "key": "260f9570fed89b95c28916dee27bc684"
+    }
     try:
-        now = datetime.datetime.now()
-        timestamp = int(now.timestamp())
-        serie_id = PARAMETRO_A_ID.get(serie_facturacion, PARAMETRO_A_ID[SERIE_FACTURACION_DEFAULT])
-        payload = {
-            "applyContactDefaults": True,
-            "items": [{
-                "tax": iva * 100,
-                "name": f"{reserva['listingName']} - {reserva['arrivalDate']} a {reserva['departureDate']}",
-                "subtotal": str(reserva["totalPrice"] / (1 + iva))
-            }],
-            "currency": reserva["currency"],
-            "date": timestamp,
-            "numSerieId": serie_id,
-            "contactName": reserva["guestName"]
-        }
-        headers = {
-            "accept": "application/json",
-            "content-type": "application/json",
-            "key": "260f9570fed89b95c28916dee27bc684"
-        }
         response = requests.post(URL_HOLDED_INVOICE, json=payload, headers=headers)
         response.raise_for_status()
         print(payload)
