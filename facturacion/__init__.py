@@ -83,8 +83,8 @@ def crear_factura(reserva, serie_facturacion, iva):
         return response.status_code, response.json(), payload
         
     except requests.RequestException as e:
-        logging.error(f"Error al crear la factura: {str(e)} {payload}")
-        raise
+        logging.error(f"Error al crear la factura: {str(e)}"+payload)
+        raise ValueError("el payload" + payload)
  
 def marcarComoFacturada(reserva,token):
     try:
