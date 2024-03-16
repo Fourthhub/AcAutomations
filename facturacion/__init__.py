@@ -79,7 +79,7 @@ def crear_factura(reserva, serie_facturacion, iva):
         }
         response = requests.post(URL_HOLDED_INVOICE, json=payload, headers=headers)
         response.raise_for_status()
-        return response.status_code, response.json()
+        return response.status_code, response.json(), payload
     except requests.RequestException as e:
         logging.error(f"Error al crear la factura: {str(e)}")
         raise
@@ -124,11 +124,11 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             return func.HttpResponse("Factura ya existente", status_code=200)
         
         serie_facturacion, iva = determinar_serie_y_iva(reserva)
-        resultado_crear_factura, factura_info = crear_factura(reserva, serie_facturacion, iva)
+        resultado_crear_factura, factura_info,payload = crear_factura(reserva, serie_facturacion, iva)
         access_token = obtener_acceso_hostaway()
         marcarComoFacturada(reserva, access_token)
         
         return func.HttpResponse(f"Factura creada correctamente: {factura_info}", status_code=resultado_crear_factura)
     except Exception as e:
         logging.error(f"Error en la función: {str(e)}")
-        return func.HttpResponse(f"Error interno del servidor: {str(e)}", status_code=500)
+        return func.HttpResponse(f"Error interno del servidor: {str(e)}  {payload}", status_code=500)
