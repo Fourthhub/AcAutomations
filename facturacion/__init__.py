@@ -112,14 +112,14 @@ def marcarComoFacturada(reserva,token):
         "customField": {
           "id": 56844,
           "name": "holdedID",
-          "possibleValues": null,
+          "possibleValues": None,
           "type": "text",
           "isPublic": 1,
           "insertedOn": "2024-02-24 21:10:10",
           "updatedOn": "2024-02-24 21:10:10"
         }
       }
-            reserva["customFieldValues"].append(nuevoCustomField)
+        reserva["customFieldValues"].append(nuevoCustomField)
         
         response = requests.put(url, json=reserva, headers=headers)
         response.raise_for_status()  # Esto lanzará un error si el código de estado es >= 400
