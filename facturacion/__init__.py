@@ -79,9 +79,11 @@ def crear_factura(reserva, serie_facturacion, iva):
         }
         response = requests.post(URL_HOLDED_INVOICE, json=payload, headers=headers)
         response.raise_for_status()
+        print(payload)
         return response.status_code, response.json(), payload
+        
     except requests.RequestException as e:
-        logging.error(f"Error al crear la factura: {str(e)}")
+        logging.error(f"Error al crear la factura: {str(e)} {payload}")
         raise
  
 def marcarComoFacturada(reserva,token):
@@ -132,4 +134,4 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         return func.HttpResponse(f"Factura creada correctamente: {factura_info}", status_code=resultado_crear_factura)
     except Exception as e:
         logging.error(f"Error en la función: {str(e)}")
-        return func.HttpResponse(f"Error interno del servidor: {str(e)} {payload} ", status_code=500)
+        return func.HttpResponse(f"Error interno del servidor: {str(e)}", status_code=500)
