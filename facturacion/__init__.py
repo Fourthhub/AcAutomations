@@ -111,6 +111,7 @@ def marcarComoFacturada(reserva,token):
 
 def main(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('Azure HTTP trigger function processed a request.')
+    payload=""
     try:
         if req.get_json().get("object")!="reservation":
             return func.HttpResponse("Solo procesa eventos de reserva", status_code=200)
@@ -131,4 +132,4 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         return func.HttpResponse(f"Factura creada correctamente: {factura_info}", status_code=resultado_crear_factura)
     except Exception as e:
         logging.error(f"Error en la función: {str(e)}")
-        return func.HttpResponse(f"Error interno del servidor: {str(e)}  {payload}", status_code=500)
+        return func.HttpResponse(f"Error interno del servidor: {str(e)} {payload} ", status_code=500)
