@@ -10,7 +10,7 @@ URL_HOLDED_INVOICE = "https://api.holded.com/api/invoicing/v1/documents/invoice"
 SERIE_FACTURACION_DEFAULT = "Alojamientos"
 IVA_DEFAULT = 0.21
 PARAMETRO_A_ID = {
-    "Rocio": "65d9f06600a829a27305f066s",
+    "Rocio": "65d9f06600a829a27305f066",
     "Alojamientos": "65d9f0e90396551d79088219",
     "Efectivo": "62115e5292bee258e53a6756",
 }
@@ -56,35 +56,33 @@ def comprobar_si_existe_factura(reserva):
     
 
 def crear_factura(reserva, serie_facturacion, iva):
-    now = datetime.datetime.now()
-    timestamp = int(now.timestamp())
-    serie_id = PARAMETRO_A_ID.get(serie_facturacion, PARAMETRO_A_ID[SERIE_FACTURACION_DEFAULT])
-    payload = {
-        "applyContactDefaults": True,
-        "items": [{
-            "tax": iva * 100,
-            "name": f"{reserva['listingName']} - {reserva['arrivalDate']} a {reserva['departureDate']}",
-            "subtotal": str(reserva["totalPrice"] / (1 + iva))    
-        }],
-        "currency": reserva["currency"],
-        "date": timestamp,
-        "numSerieId": serie_id,
-        "contactName": reserva["guestName"]
-    }
-    headers = {
-        "accept": "application/json",
-        "content-type": "application/json",
-        "key": "260f9570fed89b95c28916dee27bc684"
-    }
     try:
+        now = datetime.datetime.now()
+        timestamp = int(now.timestamp())
+        serie_id = PARAMETRO_A_ID.get(serie_facturacion, PARAMETRO_A_ID[SERIE_FACTURACION_DEFAULT])
+        payload = {
+            "applyContactDefaults": True,
+            "items": [{
+                "tax": iva * 100,
+                "name": f"{reserva['listingName']} - {reserva['arrivalDate']} a {reserva['departureDate']}",
+                "subtotal": str(reserva["totalPrice"] / (1 + iva))
+            }],
+            "currency": reserva["currency"],
+            "date": timestamp,
+            "numSerieId": serie_id,
+            "contactName": reserva["guestName"]
+        }
+        headers = {
+            "accept": "application/json",
+            "content-type": "application/json",
+            "key": "260f9570fed89b95c28916dee27bc684"
+        }
         response = requests.post(URL_HOLDED_INVOICE, json=payload, headers=headers)
         response.raise_for_status()
-        print(payload)
-        return response.status_code, response.json(), payload
-        
+        return response.status_code, response.json()
     except requests.RequestException as e:
-        logging.error(f"Error al crear la factura: {str(e)}" )
-        raise ValueError("el payload" + str(payload))
+        logging.error(f"Error al crear la factura: {str(e)}")
+        raise
  
 def marcarComoFacturada(reserva,token):
     try:
@@ -113,7 +111,6 @@ def marcarComoFacturada(reserva,token):
 
 def main(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('Azure HTTP trigger function processed a request.')
-    payload=""
     try:
         if req.get_json().get("object")!="reservation":
             return func.HttpResponse("Solo procesa eventos de reserva", status_code=200)
@@ -127,7 +124,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             return func.HttpResponse("Factura ya existente", status_code=200)
         
         serie_facturacion, iva = determinar_serie_y_iva(reserva)
-        resultado_crear_factura, factura_info,payload = crear_factura(reserva, serie_facturacion, iva)
+        resultado_crear_factura, factura_info = crear_factura(reserva, serie_facturacion, iva)
         access_token = obtener_acceso_hostaway()
         marcarComoFacturada(reserva, access_token)
         
