@@ -1,0 +1,23 @@
+repos:
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.18.2
+    hooks:
+      - id: gitleaks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: check-json
+      - id: check-yaml
+      - id: check-xml
+      - id: detect-private-key
+      - id: name-tests-test
+      - id: pretty-format-json
+        args:
+          - "--autofix"
+          - "--indent=2"
+          - "--no-sort-keys"
+      - id: mixed-line-ending
+        args:
+          - "--fix=lf"
+      - id: requirements-txt-fixer
+      - id: check-shebang-scripts-are-executable
