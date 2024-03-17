@@ -1,0 +1,25 @@
+{
+  "name": "Python 3",
+  "image": "mcr.microsoft.com/devcontainers/python:1-3.12-bullseye",
+  "features": {
+    "ghcr.io/devcontainers-contrib/features/pre-commit:2": {}
+  },
+  "forwardPorts": [],
+  "postCreateCommand": "pip3 install --user -r requirements.txt",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-python.debugpy",
+        "EditorConfig.EditorConfig",
+        "dzhavat.bracket-pair-toggler",
+        "miguelsolorio.fluent-icons",
+        "miguelsolorio.symbols"
+      ],
+      "settings": {
+        "workbench.iconTheme": "symbols",
+        "workbench.productIconTheme": "fluent-icons"
+      }
+    }
+  }
+}
