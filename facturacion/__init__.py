@@ -128,6 +128,21 @@ def marcarComoFacturada(reserva,token):
         error_msg = f"Error al marcar como facturada: {e}"
         logging.error(error_msg)
         return error_msg
+def comprobar_fecha(reserva):
+    fecha_checkin = reserva["data"]["arrivalDate"]
+    # Convertir la fecha de checkin a un objeto datetime
+    fecha_checkin_dt = datetime.strptime(fecha_checkin, "%Y-%m-%d").date()
+    
+    # Obtener la fecha actual sin la hora
+    fecha_actual = datetime.now().date()
+    
+    # Comparar la fecha actual con la fecha de checkin
+    if fecha_actual >= fecha_checkin_dt:
+        return False
+    else:
+        return True
+
+    
 
 def main(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('Azure HTTP trigger function processed a request.')
@@ -139,9 +154,10 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             return func.HttpResponse("Test Succesfull", status_code=200)
         if reserva.get("paymentStatus") != "Paid":
             return func.HttpResponse("La factura no se genera hasta que no se completa el pago", status_code=200)
-        
         if comprobar_si_existe_factura(reserva):
             return func.HttpResponse("Factura ya existente", status_code=200)
+        if comprobar_fecha(reserva):
+            return func.HttpResponse("La factura se generara el dia de llegada", status_code=200)
         
         serie_facturacion, iva = determinar_serie_y_iva(reserva)
         resultado_crear_factura, factura_info = crear_factura(reserva, serie_facturacion, iva)
