@@ -32,20 +32,34 @@ def obtener_acceso_hostaway():
         raise
 
 def determinar_serie_y_iva(reserva):
+
     serie_facturacion = SERIE_FACTURACION_DEFAULT
     iva = IVA_DEFAULT
-    custom_fields = reserva.get("customFieldValues", [])
     
+    url = f" https://api.hostaway.com/v1/guestPayments/charges?reservationId={reserva_id}"
+    headers = {
+            'Authorization': f"Bearer {token}",
+            'Content-type': "application/json",
+            'Cache-control': "no-cache",
+        }
+    response = requests.get(url, headers=headers)
+    data = response.json()
+
+    # Acceder al 'paymentMethod' del primer elemento de 'result'
+    payment_method = data['result'][0]['paymentMethod']
+    if payment_method == "cash":
+        serie_facturacion="Efectivo"
+        iva=0
+        return serie_facturacion,iva
+    
+    custom_fields = reserva.get("listingCustomFields", [])
     for field in custom_fields:
-        if field["customField"]["name"] == "Serie Facturas":
+        if field["customField"]["name"] == "Serie_Facturación":
             serie_facturacion = field["value"]
         if serie_facturacion == "Rocio":
             iva = 0
             break
-        if serie_facturacion == "Efectivo":
-            iva = 0
-            break
-    
+
     return serie_facturacion, iva
 
 def comprobar_si_existe_factura(reserva):
