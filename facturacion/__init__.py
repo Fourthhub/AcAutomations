@@ -31,7 +31,7 @@ def obtener_acceso_hostaway():
         logging.error(f"Error al obtener el token de acceso: {str(e)}")
         raise
 
-def determinar_serie_y_iva(reserva):
+def determinar_serie_y_iva(reserva,token):
 
     serie_facturacion = SERIE_FACTURACION_DEFAULT
     iva = IVA_DEFAULT
@@ -175,10 +175,10 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             return func.HttpResponse("Factura ya existente", status_code=200)
         if comprobar_fecha(reserva):
             return func.HttpResponse("La factura se generara el dia de llegada", status_code=200)
-        
-        serie_facturacion, iva = determinar_serie_y_iva(reserva)
-        resultado_crear_factura, factura_info = crear_factura(reserva, serie_facturacion, iva)
         access_token = obtener_acceso_hostaway()
+        serie_facturacion, iva = determinar_serie_y_iva(reserva,access_token)
+        resultado_crear_factura, factura_info = crear_factura(reserva, serie_facturacion, iva)
+        
         marcarComoFacturada(reserva, access_token)
         
         return func.HttpResponse(f"Factura creada correctamente: {factura_info}", status_code=resultado_crear_factura)
