@@ -116,7 +116,7 @@ def marcarComoFacturada(reserva,token):
         custom_fields = reserva["customFieldValues"]
         for field in custom_fields:
             if field["customField"]["name"] == "holdedID":
-                field["value"] = "Ya esta facturada"
+                field["value"] = "Ya esta Facturada"
                 encontrado = True  
                 break
         if not encontrado:
