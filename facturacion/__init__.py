@@ -134,7 +134,7 @@ def marcarComoFacturada(reserva,token):
 def comprobar_fecha(reserva):
     fecha_checkin = reserva["arrivalDate"]
     # Convertir la fecha de checkin a un objeto datetime
-    fecha_checkin_dt = datetime.strptime(fecha_checkin, "%Y-%m-%d").date()
+    fecha_checkin_dt = datetime.datetime.strptime(fecha_checkin, "%Y-%m-%d").date()
     
     # Obtener la fecha actual sin la hora
     fecha_actual = datetime.now().date()
