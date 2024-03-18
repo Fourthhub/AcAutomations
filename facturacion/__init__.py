@@ -42,6 +42,9 @@ def determinar_serie_y_iva(reserva):
         if serie_facturacion == "Rocio":
             iva = 0
             break
+        if serie_facturacion == "Efectivo":
+            iva = 0
+            break
     
     return serie_facturacion, iva
 
@@ -129,7 +132,7 @@ def marcarComoFacturada(reserva,token):
         logging.error(error_msg)
         return error_msg
 def comprobar_fecha(reserva):
-    fecha_checkin = reserva["data"]["arrivalDate"]
+    fecha_checkin = reserva["arrivalDate"]
     # Convertir la fecha de checkin a un objeto datetime
     fecha_checkin_dt = datetime.strptime(fecha_checkin, "%Y-%m-%d").date()
     
