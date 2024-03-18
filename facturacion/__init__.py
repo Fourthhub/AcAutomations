@@ -137,7 +137,7 @@ def comprobar_fecha(reserva):
     fecha_checkin_dt = datetime.datetime.strptime(fecha_checkin, "%Y-%m-%d").date()
     
     # Obtener la fecha actual sin la hora
-    fecha_actual = datetime.now().date()
+    fecha_actual = datetime.datetime.now().date()
     
     # Comparar la fecha actual con la fecha de checkin
     if fecha_actual >= fecha_checkin_dt:
