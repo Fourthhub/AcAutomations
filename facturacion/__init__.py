@@ -35,7 +35,7 @@ def determinar_serie_y_iva(reserva):
 
     serie_facturacion = SERIE_FACTURACION_DEFAULT
     iva = IVA_DEFAULT
-    
+    reserva_id = str(reserva["hostawayReservationId"])
     url = f" https://api.hostaway.com/v1/guestPayments/charges?reservationId={reserva_id}"
     headers = {
             'Authorization': f"Bearer {token}",
