@@ -8,6 +8,13 @@
         "Function": "Trace",
         "Host.Aggregator": "Trace"
     }
+  
+},
+  "extensions": {
+    "queues": {
+      "batchSize": 1,
+      "maxDequeueCount": 5
+  }
 },
   "extensionBundle": {
     "id": "Microsoft.Azure.Functions.ExtensionBundle",
