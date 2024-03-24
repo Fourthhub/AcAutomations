@@ -120,25 +120,15 @@ def marcarComoFacturada(reserva,token):
                 encontrado = True  
                 break
         if not encontrado:
-            nuevoCustomField= {
-            "id": 40742806,
+            nuevoCustomField= {"customFieldValues": [
+        {
             "customFieldId": 56844,
-            "value": "Ya esta facturada",
-            "insertedOn": "2024-03-16 18:16:22",
-            "updatedOn": "2024-03-16 19:26:11",
-            "customField": {
-            "id": 56844,
-            "name": "holdedID",
-            "possibleValues": None,
-            "type": "text",
-            "isPublic": 1,
-            "insertedOn": "2024-02-24 21:10:10",
-            "updatedOn": "2024-02-24 21:10:10"
-            }
-            }
-            reserva["customFieldValues"].append(nuevoCustomField)
-        
-        response = requests.put(url, json=reserva, headers=headers)
+            "value": "Ya esta facturada"
+        } ]
+        }
+            response = requests.put(url, json=nuevoCustomField, headers=headers)
+        else:
+            response = requests.put(url, json=reserva, headers=headers)
         response.raise_for_status()  # Esto lanzará un error si el código de estado es >= 400
         return "Marca como facturada exitosamente."
     except requests.RequestException as e:
