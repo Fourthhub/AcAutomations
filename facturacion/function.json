@@ -5,8 +5,8 @@
       "name": "msg",
       "type": "queueTrigger",
       "direction": "in",
-      "queueName": "colafunqueue",
-      "connection": "DefaultEndpointsProtocol=https;AccountName=colafun;AccountKey=9lrsrXglDMb2+9aY3V8uZzZbI36AXU1tVIc8QSpdmFRacuJeGJEZlU2IisrgZi2HNBzvbtuRc1x++AStbm3BaQ==;EndpointSuffix=core.windows.net"
+      "queueName": "patimicola",
+      "connection": "DefaultEndpointsProtocol=https;AccountName=acfacturacion;AccountKey=VKJeUoPNRhUNCH0NilY5s/1esvENKWnMDljjmkiZ6ibEbohlaXiFAMsSzJmjHwWvdq86Mh3CyLto+ASt8i+jAw==;EndpointSuffix=core.windows.net"
     }
   ]
 }
