@@ -2,19 +2,11 @@
   "scriptFile": "__init__.py",
   "bindings": [
     {
-      "authLevel": "function",
-      "type": "httpTrigger",
+      "name": "msg",
+      "type": "queueTrigger",
       "direction": "in",
-      "name": "req",
-      "methods": [
-        "get",
-        "post"
-      ]
-    },
-    {
-      "type": "http",
-      "direction": "out",
-      "name": "$return"
+      "queueName": "colafunqueue",
+      "connection": "DefaultEndpointsProtocol=https;AccountName=colafun;AccountKey=9lrsrXglDMb2+9aY3V8uZzZbI36AXU1tVIc8QSpdmFRacuJeGJEZlU2IisrgZi2HNBzvbtuRc1x++AStbm3BaQ==;EndpointSuffix=core.windows.net"
     }
   ]
 }

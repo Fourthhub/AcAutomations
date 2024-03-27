@@ -2,6 +2,7 @@
   "IsEncrypted": false,
   "Values": {
     "AzureWebJobsStorage": "",
-    "FUNCTIONS_WORKER_RUNTIME": "python"
+    "FUNCTIONS_WORKER_RUNTIME": "python",
+    "funciondecola_STORAGE": "DefaultEndpointsProtocol=https;AccountName=funciondecola;AccountKey=RTl0R58hLPv0ZvsxDufY5jlw2s3yyFlDBC11fdzP1AXLMOo30GGxJ4vgjfcnj+2EMPR5YfWhYpSe+AStQPSFZw==;EndpointSuffix=core.windows.net"
   }
 }

@@ -150,13 +150,16 @@ def comprobar_fecha(reserva):
         return True
 
     
-
-def main(req: func.HttpRequest) -> func.HttpResponse:
+@app.function_name(name="QueueFunc")
+@app.queue_trigger(arg_name="msg", queue_name="inputqueue",
+                   connection="storageAccountConnectionString")  # Queue trigger
+def main(msg: func.QueueMessage,
+                  outputQueueItem: func.Out[str]) -> None:
     logging.info('Azure HTTP trigger function processed a request.')
     try:
-        if req.get_json().get("object")!="reservation":
+        if msg.get_json().get("object")!="reservation":
             return func.HttpResponse("Solo procesa eventos de reserva", status_code=200)
-        reserva = req.get_json().get("data", {})
+        reserva = msg.get_json().get("data", {})
         if reserva == "test":
             return func.HttpResponse("Test Succesfull", status_code=200)
         if reserva.get("paymentStatus") != "Paid":
