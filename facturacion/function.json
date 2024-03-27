@@ -6,7 +6,7 @@
       "type": "queueTrigger",
       "direction": "in",
       "queueName": "patimicola",
-      "connection": "DefaultEndpointsProtocol=https;AccountName=acfacturacion;AccountKey=VKJeUoPNRhUNCH0NilY5s/1esvENKWnMDljjmkiZ6ibEbohlaXiFAMsSzJmjHwWvdq86Mh3CyLto+ASt8i+jAw==;EndpointSuffix=core.windows.net"
+      "connection": "AzureWebJobsStorage"
     }
   ]
 }
