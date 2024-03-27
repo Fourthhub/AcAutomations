@@ -5,6 +5,7 @@ import requests
 import json
 
 # Configuración y constantes
+connect_str = "DefaultEndpointsProtocol=https;AccountName=colafun;AccountKey=9lrsrXglDMb2+9aY3V8uZzZbI36AXU1tVIc8QSpdmFRacuJeGJEZlU2IisrgZi2HNBzvbtuRc1x++AStbm3BaQ==;EndpointSuffix=core.windows.net"
 URL_HOSTAWAY_TOKEN = "https://api.hostaway.com/v1/accessTokens"
 URL_HOLDED_INVOICE = "https://api.holded.com/api/invoicing/v1/documents/invoice"
 SERIE_FACTURACION_DEFAULT = "Alojamientos"
@@ -150,9 +151,9 @@ def comprobar_fecha(reserva):
         return True
 
     
-@app.function_name(name="QueueFunc")
-@app.queue_trigger(arg_name="msg", queue_name="inputqueue",
-                   connection="storageAccountConnectionString")  # Queue trigger
+@app.function_name(name="facturacion")
+@app.queue_trigger(arg_name="msg", queue_name="colafunqueue",
+                   connection=connect_str)  # Queue trigger
 def main(msg: func.QueueMessage,
                   outputQueueItem: func.Out[str]) -> None:
     logging.info('Azure HTTP trigger function processed a request.')
