@@ -153,15 +153,12 @@ def comprobar_fecha(reserva):
 
 
 
-@app.queue_trigger(arg_name="msg", queue_name="colafunqueue",
-                   connection=connect_str)  # Queue trigger
-def main(msg: func.QueueMessage,
-                  outputQueueItem: func.Out[str]) -> None:
+def main(msg: func.QueueMessage):
     logging.info('Azure HTTP trigger function processed a request.')
     try:
-        if msg.get_json().get("object")!="reservation":
+        if msg.get_body().decode('utf-8').get_json().get("object")!="reservation":
             return func.HttpResponse("Solo procesa eventos de reserva", status_code=200)
-        reserva = msg.get_json().get("data", {})
+        reserva = msg.get_body().decode('utf-8').get_json().get("data", {})
         if reserva == "test":
             return func.HttpResponse("Test Succesfull", status_code=200)
         if reserva.get("paymentStatus") != "Paid":
