@@ -9,6 +9,7 @@ app = func.FunctionApp()
 connect_str = "DefaultEndpointsProtocol=https;AccountName=colafun;AccountKey=9lrsrXglDMb2+9aY3V8uZzZbI36AXU1tVIc8QSpdmFRacuJeGJEZlU2IisrgZi2HNBzvbtuRc1x++AStbm3BaQ==;EndpointSuffix=core.windows.net"
 URL_HOSTAWAY_TOKEN = "https://api.hostaway.com/v1/accessTokens"
 URL_HOLDED_INVOICE = "https://api.holded.com/api/invoicing/v1/documents/invoice"
+URL_HOLDED_RECEIPT = "https://api.holded.com/api/invoicing/v1/documents/salesreceipt"
 SERIE_FACTURACION_DEFAULT = "Alojamientos"
 IVA_DEFAULT = 0.21
 PARAMETRO_A_ID = {
@@ -64,6 +65,23 @@ def determinar_serie_y_iva(reserva,token):
 
     return serie_facturacion, iva
 
+def obtener_contact_name_listing(reserva, token):
+    try:
+        listing_id = str(reserva["listingId"])
+        url = f"https://api.hostaway.com/v1/listings/{listing_id}"
+        headers = {
+            'Authorization': f"Bearer {token}",
+            'Content-type': "application/json",
+            'Cache-control': "no-cache",
+        }
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()
+        data = response.json()
+        return data["result"]["contactName"]
+    except requests.RequestException as e:
+        logging.error(f"Error al obtener el contactName del listing: {str(e)}")
+        raise
+
 def comprobar_si_existe_factura(reserva):
     custom_fields = reserva["customFieldValues"]
     for field in custom_fields:
@@ -101,6 +119,37 @@ def crear_factura(reserva, serie_facturacion, iva):
         return response.status_code, response.json()
     except requests.RequestException as e:
         logging.error(f"Error al crear la factura: {str(e)}")
+        raise
+    
+
+def generarRecibo(propietario, reserva, serie_facturacion, iva):
+    try:
+        now = datetime.datetime.now()
+        timestamp = int(now.timestamp())
+        serie_id = PARAMETRO_A_ID.get(serie_facturacion, PARAMETRO_A_ID[SERIE_FACTURACION_DEFAULT])
+        payload = {
+            "applyContactDefaults": False,
+            "contactName": propietario.upper(),
+            "items": [{
+                "tax": iva * 100,
+                "name": f"{reserva['guestName']} {reserva['listingName']} - {reserva['arrivalDate']} a {reserva['departureDate']}",
+                "subtotal": str(reserva["totalPrice"] / (1 + iva))
+            }],
+            "currency": reserva["currency"],
+            "notes": "Adarena Stays S.L interviene exclusivamente como mandatario e intermediario en la gestión de cobros y reservas del inmueble objeto de alquiler turístico, actuando en nombre y por cuenta del propietario, quien ostenta la condición de prestador del servicio a efectos contractuales y fiscales.",
+            "date": timestamp,
+            "numSerieId": serie_id,
+        }
+        headers = {
+            "accept": "application/json",
+            "content-type": "application/json",
+            "key": "2ed3f9bfff52da560e2c7826fe30f6c1"
+        }
+        response = requests.post(URL_HOLDED_RECEIPT, json=payload, headers=headers)
+        response.raise_for_status()
+        return response.status_code, response.json()
+    except requests.RequestException as e:
+        logging.error(f"Error al generar el recibo: {str(e)}")
         raise
  
 def marcarComoFacturada(reserva,token):
@@ -163,17 +212,26 @@ def main(msg: func.QueueMessage):
             return func.HttpResponse("Test Succesfull", status_code=200)
         if reserva.get("paymentStatus") != "Paid":
             return func.HttpResponse("La factura no se genera hasta que no se completa el pago", status_code=200)
+        if reserva.get("totalPrice", 0) == 0:
+            return func.HttpResponse("La reserva es de 0€, no se genera factura", status_code=200)
         if comprobar_si_existe_factura(reserva):
             return func.HttpResponse("Factura ya existente", status_code=200)
         if comprobar_fecha(reserva):
             return func.HttpResponse("La factura se generara el dia de llegada", status_code=200)
         access_token = obtener_acceso_hostaway()
-        serie_facturacion, iva = determinar_serie_y_iva(reserva,access_token)
-        resultado_crear_factura, factura_info = crear_factura(reserva, serie_facturacion, iva)
-        
+        serie_facturacion, iva = determinar_serie_y_iva(reserva, access_token)
+
+        if serie_facturacion == "Rocio":
+            propietario = obtener_contact_name_listing(reserva, access_token)
+            resultado, info = generarRecibo(propietario, reserva, serie_facturacion, iva)
+        else:
+            resultado, info = crear_factura(reserva, serie_facturacion, iva)
+
         marcarComoFacturada(reserva, access_token)
-        
-        return func.HttpResponse(f"Factura creada correctamente: {factura_info}", status_code=resultado_crear_factura)
+
+        return func.HttpResponse(f"Documento creado correctamente: {info}", status_code=resultado)
+    
     except Exception as e:
+
         logging.error(f"Error en la función: {str(e)}")
         return func.HttpResponse(f"Error interno del servidor: {str(e)}", status_code=500)
